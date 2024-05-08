@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="/static/style.css">
+
+</head>
+<body>
+
+<form method="post" action="/login">
+<div class="centerV centerH">
+    <label>Username:</label>
+    <input type="text" name = "Username" required>
+    <label>Password:</label>
+    <input type="password" id="password" name = "Password" required>
+    <input type="checkbox" id="myCheckbox1" onclick="myFunction()">
+    <label for="myCheckbox1"><img src="/static/eye.png" id="eyeimage" onclick="changeImage()"/></label>
+    <p class="error">{{error}}</p>
+</div>
+
+<div class="centerH lower">
+    <input type="submit" value="Login" name = "mode">
+    <input type="submit" value="Register" name = "mode">
+</div>
+</form>
+
+<script>
+    function myFunction() {
+        var x = document.getElementById("password");
+        if (x.type === "password") {
+            x.type = "text";
+        } else {
+            x.type = "password";
+        }
+
+    }
+    let test = 1;
+    function changeImage(){
+        var image = document.getElementById("eyeimage");
+        if (test == 1){
+            image.src = "/static/eye-slash-icon.png";
+            test = 0;
+        } else {
+            image.src = "/static/eye.png";
+            test = 1;
+        }
+        
+    }
+</script>
+
+</body>
+</html>
+
+

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="/static/profile.css">
+</head>
+
+<body>
+<div>
+    <h1 class = "big">{{username}}</h1>
+</div>
+<div>
+    <img src = "/static/avatars/cursed_donut.png" id="profilePicture" width="200" height="200">
+</div>
+
+<form id="avatarinfo">
+    <div class = "editonly">
+        <label for="img">Change Avatar:</label>
+        <input type="file" id="avatarImage" name="avatar" accept="image/*" disabled>
+        <input type="submit" value="Save Avatar" id = "saveavatar" name="edit" disabled>
+    </div>
+</form>
+<form id="userinfo"> 
+    <div>
+        <label>First Name:</label>
+        <input type="text" name = "fname" id = "fname" value = "" disabled>
+        <label>Last Name:</label>
+        <input type="text" name = "lname" id = "lname" value = "" disabled>
+    </div>
+    <div class = "editonly">
+        <div>
+            <label>Change Password:</label>
+            <input type="password" name="password" id = "password" value = "" disabled>
+            <label>Confirm New Password:</label>
+            <input type="password" name="cpassword" id = "cpassword" value = "" disabled>
+            <p class="error" id="errormessage"></p>
+        </div>
+        <div>
+            <input type="submit" value="Save" id = "save" name="edit" disabled>
+        </div>
+    </div>
+</form>
+
+<form id="deleteaccountform">
+    <div class = "editonly">
+        <input type = "submit" value="Delete Account" id = "delete" disabled>
+    </div>
+</form>
+
+<form id="logoutform" method="POST" action="/logout">
+    <div class = "editonly">
+        <input type = "submit" value="Log Out" id = "logout" disabled>
+    </div>
+</form>
+
+<div>
+    <h1>Games Played:</h1>
+</div>
+<div>
+    <h1>Score:</h1>
+</div>
+<div>
+    <h1>Opponent:</h1>
+</div>
+
+<script>
+    let loggedIn = {{loggedin}};
+    let firstname = "John";
+    let lastname = "Doe";
+    let password = null;
+    let cpassword = null;
+    console.log(loggedIn);
+
+    async function putData(data = {}) {
+        let url = window.location;
+        console.log("putting data");
+        console.log(data);
+
+        const response = await fetch(url, {
+        method: "PUT",
+        headers: {
+                'Content-Type' : 'application/json'
+            },
+        body: JSON.stringify(data)
+        });
+        return response.json();
+    }
+
+    async function fetchprofile(){
+        let profile = await putData({'action':'get'})
+        console.log(profile);
+        document.getElementById("fname").value = profile['data']['fname'];
+        document.getElementById("lname").value = profile['data']['lname'];
+        document.getElementById("profilePicture").src = profile['data']['avatar'];
+    }
+
+// form stuff
+    const userinfoform = document.getElementById("userinfo");
+    const avatarinfoform = document.getElementById("avatarinfo");
+    const deleteform = document.getElementById("deleteaccountform");
+
+    async function sendData() {
+        console.log("creating formData object");
+        // Associate the FormData object with the form element
+        const formData = new FormData(userinfoform);
+
+        //convert FormData to dictionary
+        console.log("converting formData to dict");
+        let dictData = {};
+            formData.forEach(function(value, key){
+            dictData[key] = value;
+        });
+        data = {
+            "action":"update",
+            "data": dictData
+        }
+        console.log("calling putData");
+        
+        let response = await putData(data)
+        console.log(response)
+
+        if (response['status'] == "error"){
+            document.getElementById("errormessage").innerText = response['data']
+        }
+        else{
+            document.getElementById("errormessage").innerText = ""
+        }
+    }
+    
+    async function sendAvatar(){
+        console.log("sendAvatar called");
+        let url = window.location;
+        
+        const formData = new FormData();
+        formData.append('avatar',document.getElementById('avatarImage').files[0])
+        console.log(formData)
+        
+        promise = await fetch(url, {
+        method: "PUT",
+        body: formData
+        });
+        location.reload();
+    }
+
+    // Take over form submission
+    userinfoform.addEventListener("submit", (event) => {
+        event.preventDefault();
+        console.log("submit user info pressed");
+        sendData();
+    });
+
+    avatarinfoform.addEventListener("submit", (event) => {
+        event.preventDefault();
+        console.log("submit avatar pressed");
+        sendAvatar();
+    });
+
+    deleteform.addEventListener("submit", (event) => {
+        event.preventDefault();
+        console.log("delete pressed");
+        //send delete request
+        fetch(window.location, {
+        method: "DELETE",
+        }).then( function( data) {
+            if( data.redirected) {
+                window.location = data.url
+            }
+        })
+    });
+
+    async function init(){
+        let params = new URLSearchParams(window.location.search)
+        await fetchprofile()
+
+        let editonly = document.getElementsByClassName("editonly");
+
+        if(loggedIn == "true" || loggedIn == true){
+            document.getElementById("avatarImage").removeAttribute("disabled");
+            document.getElementById("fname").removeAttribute("disabled");
+            document.getElementById("lname").removeAttribute("disabled");
+            document.getElementById("password").removeAttribute("disabled");
+            document.getElementById("cpassword").removeAttribute("disabled");
+            document.getElementById("save").removeAttribute("disabled");
+            document.getElementById("delete").removeAttribute("disabled");
+            document.getElementById("logout").removeAttribute("disabled");
+            document.getElementById("saveavatar").removeAttribute("disabled");
+            
+            for(let element of editonly){
+                element.style.display = "block"
+            }
+        }
+        else{
+            for(let element of editonly){
+                element.style.display = "none";
+            }
+        }
+    }
+
+    window.onload = init;
+</script>
+
+</body>
+</html>
+
+

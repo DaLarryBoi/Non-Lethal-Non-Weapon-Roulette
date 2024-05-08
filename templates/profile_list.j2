@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="/static/style.css">
+
+</head>
+<body>
+    <div>
+        <h1>List of profiles</h1>
+    </div>
+
+<script>
+    let userdict = {{dict}}
+    console.log(userdict)
+    for (const prop in userdict) {
+        console.log(`key: ${prop}, value: ${userdict[prop]}`);
+        let a = document.createElement('a');
+        let linkText = document.createTextNode(prop);
+        a.appendChild(linkText);
+        a.title = prop;
+        a.href = userdict[prop];
+        document.body.appendChild(a);
+    }
+
+</script>
+</body>
+</html>
+

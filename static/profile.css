@@ -1,0 +1,98 @@
+/*set all elements to have zero padding, zero margin, and the box-sizing to "border-box"*/
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+/* defines colors for the theme */
+:root {
+    --aquamarine: #56e39fff;
+    --mint: #59c9a5ff;
+    --feldgrau: #5b6c5dff;
+    --raisin-black: #3b2c35ff;
+    --dark-purple: #2a1f2dff;
+    --color-bg: #2a1f2dff;
+    --color-fg: #59c9a5ff;
+    --num-rows: 10;
+    --num-cols: 10;
+    /* --color-bg: 119, 33, 138;
+    --color-fg: 255, 255, 255; */
+    --color-selected: #3b2c35ff;
+    --color-mine: 126, 27, 27, 0.75;
+    --color-flag: #5b6c5dff;
+}
+
+body {
+    background-color: var(--raisin-black);
+}
+
+h1{
+    color: var(--aquamarine);
+    font-size: 25px;
+}
+
+.big{
+    font-size: 48px;
+}
+
+.error{
+    color:red;
+    font-size:30px;
+}
+
+form{
+    display: block;
+    justify-content: center;
+    align-items: center;
+}
+
+label {
+    color: var(--aquamarine);
+    font-size: 25px;
+}
+
+input[type=text]{
+    background-color: var(--dark-purple);
+    color:var(--mint);
+    text-align: center;
+    font-size: 36px;
+    width: 99%;
+    height: 19.5%;
+    padding: 12px 20px;
+    border: 3px solid #555;
+    -webkit-transition: 0.5s;
+    transition: 0.5s;
+    outline: none;
+}
+
+input[type=password]{
+    background-color: var(--dark-purple);
+    color:var(--mint);
+    text-align: center;
+    font-size: 36px;
+    width: 99%;
+    height: 19.5%;
+    padding: 12px 20px;
+    border: 3px solid #555;
+    -webkit-transition: 0.5s;
+    transition: 0.5s;
+    outline: none;
+}
+
+
+/*highlight on focus*/
+input[type=text]:focus {
+    border: 3px solid #ccc;
+}
+
+
+input[type=submit] {
+    background-color: var(--dark-purple);
+    color:var(--mint);
+    padding: 10px;
+    text-align: center;
+    font-size: 36px;
+    width: 99%;
+    height: 19.5%;
+}
