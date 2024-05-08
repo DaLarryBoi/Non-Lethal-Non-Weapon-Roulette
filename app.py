@@ -7,9 +7,13 @@ import database
 import redis
 from werkzeug.utils import secure_filename
 
+#sudo service redis-server restart
+#start the redis server with this
+
 database.init()
 r = redis.Redis(host='localhost', port=6379, decode_responses=True)
 #more databases for games and stuff
+
 
 #folder to store profile pictures
 UPLOAD_FOLDER = os.path.join("static","avatars")
