@@ -41,7 +41,12 @@ class Roulette:
         self.__turn += (attacker != target) #if attack target is self, do not change turns
         self.__hp[target] -= fired #remove hp from the target. If the shell is blank, 0 hp is removed
         return fired
-    
+    def shellCount(self) -> tuple:
+        '''
+        return (blank, live) shells
+        '''
+        live = sum(self.__chamber)
+        return (len(self.__chamber) - live, live)
 
 
 
