@@ -36,7 +36,7 @@ class Roulette:
         '''
         attacker - the number of the player using the weapon
         target - the number of the player being attacked
-        first variable 1 if hit, 0 if blank
+        first variable 1 if live, 0 if blank
         second variable 0 if game is continuing, 1 if player 1 wins, 2 if player 2 wins
         returns in the format (hit, gameover)
         '''
