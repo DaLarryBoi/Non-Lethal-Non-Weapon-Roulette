@@ -292,7 +292,6 @@ def send_message():
     return "Message sent!"
 
 
-print("hello world")
 
 #runs the server
 app.run(port=8080)
