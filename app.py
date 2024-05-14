@@ -6,6 +6,7 @@ import os
 import database
 import redis
 from werkzeug.utils import secure_filename
+from flask_sse import sse
 
 #sudo service redis-server restart
 #start the redis server with this
@@ -20,7 +21,7 @@ UPLOAD_FOLDER = os.path.join("static","avatars")
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
 #create Flask object
-app = Flask(__name__)
+app = Flask(__name__, template_folder = "templates")
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 #creates a route
@@ -34,7 +35,7 @@ def index():
             return redirect(f"/{username}/profile",username) 
         return redirect(url_for("login"))
     except:
-        return redirect(url_for("login"))
+        return redirect(url_for("login")), 301
 
 @app.route("/login", methods=['GET','POST'])
 def login():
@@ -270,6 +271,28 @@ def queue():
 @app.errorhandler(404)
 def notfound(e):
     return send_file("static/404.html")
+
+
+@app.route("/debug")
+def debug():
+    print("foobar")
+    return render_template("roulette.j2")
+
+
+from flask import Flask
+from flask_sse import sse
+
+# app = Flask(__name__)
+app.config["REDIS_URL"] = "redis://localhost"
+app.register_blueprint(sse, url_prefix='/stream')
+
+@app.route('/send')
+def send_message():
+    sse.publish({"message": "Hello!"}, type='greeting')
+    return "Message sent!"
+
+
+print("hello world")
 
 #runs the server
 app.run(port=8080)
