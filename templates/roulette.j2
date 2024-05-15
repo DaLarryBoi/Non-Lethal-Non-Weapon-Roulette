@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="/static/roulette.css">
+    </head>
+
+    <body>
+    <div class = "status">
+        {# status of game #}
+        <h1 id = "gamestatus"> Game Start! </h1>
+    </div>
+    <div class = "selfinfo">
+        {# player username #}
+        <h1>{{player}}</h1> 
+    </div>
+    <div class = "oppinfo">
+        {# opponent username #}
+        <h1>{{opponent}}</h1>
+        <p>test</p>
+    </div>
+
+    {# images #}
+    <div>
+        <img src = "/static/sprites/player.png" id="player_sprite" width="236" height="419">
+    </div>
+    <div>
+        <img src = "/static/sprites/player.png" id="opponent_sprite" width="236" height="419">
+    </div>
+    <div>
+        <img src = "/static/sprites/bubble_gun.png" id="gun_sprite" width="534" height="305">
+    </div>
+
+    <form id="attackSelfForm">
+        <div>
+            <input type = "submit" value="Attack Self" id = "attackSelf" class = "attackSelf" disabled >
+        </div>
+    </form>
+
+    <form id="attackOppForm">
+        <div >
+            <input type = "submit" value="Attack Opp" id = "attackOpp" class = "attackOpp" disabled>
+        </div>
+    </form>
+
+
+<script type="text/javascript">
+    let loggedIn = {{loggedin}};
+
+    class RouletteGame {
+        #playerNum
+        #health
+        #oppHealth
+        #gameover
+        #liveShell
+        #blankShell
+        #gameid
+
+        
+    }
+            
+    let logic = null;  
+
+    source.addEventListener(GameID(str), function(data){
+        // Code to run when the event
+        {# Set every variable to stuff from server
+            turn, gameover, numLive,numBlank #}
+
+    // is pushed from the server
+    });
+
+
+
+    async function init(){
+        let params = new URLSearchParams(window.location.search)
+        let gameid = params.get("id")
+        logic = new RouletteGame(NUM_ROWS, NUM_COLS);
+
+    }
+
+    window.onload = init;
+</script>
+
+</body>
+</html>

@@ -267,6 +267,11 @@ def queue():
     #check for disconnect
     return redirect(url_for("login"))
 
+#test game page
+@app.route("/testgame", methods=['GET'])
+def testgame():
+    return render_template("roulette.j2", player = "self", opponent = "opponent")
+
 @app.errorhandler(404)
 def notfound(e):
     return send_file("static/404.html")
