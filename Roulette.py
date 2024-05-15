@@ -7,6 +7,7 @@ class Roulette:
     
     GAME DESCRIPTION HERE
     '''
+    __PLAYERS = []
     __STARTINGHEALTH = 3
     
     __shells = 5
@@ -19,8 +20,9 @@ class Roulette:
     __hp = [__STARTINGHEALTH, __STARTINGHEALTH] #represents the hp of the two players
                                                 #hp[0] is player 1, hp[1] is player 2
 
-    def __init__(self):
+    def __init__(self, p1, p2):
         self.reset()
+        self.__PLAYERS = [p1,p2]
 
     def reset(self):
         '''
@@ -62,6 +64,11 @@ class Roulette:
         '''
         live = sum(self.__chamber)
         return (len(self.__chamber) - live, live)
+    def players(self) -> tuple:
+        '''
+        return username of (p1, p2)
+        '''
+        return self.__PLAYERS
     def debug(self):
         '''
         DELETE THIS ONCE COMPLETE
@@ -70,16 +77,16 @@ class Roulette:
         print("chamber: ",self.__chamber)
         print("turn: ",self.__turn) 
 
-foo = Roulette()
-foo.debug()
-while True:
-    print("HIT:", foo.attack(1, 2))
-    print("BLAM")
-    foo.debug()
-    print("HIT:", foo.attack(1, 2))
-    print("BLAM")
-    foo.debug()
-    input("continue")
+# foo = Roulette()
+# foo.debug()
+# while True:
+#     print("HIT:", foo.attack(1, 2))
+#     print("BLAM")
+#     foo.debug()
+#     print("HIT:", foo.attack(1, 2))
+#     print("BLAM")
+#     foo.debug()
+#     input("continue")
 
 
 

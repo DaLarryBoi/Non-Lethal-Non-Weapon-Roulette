@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="stylesheet" href="/static/style.css">
+        <style>
+            div.body{
+                display: flex;
+                flex-direction: column;
+
+                background-color: rgba(var(--color-fg));
+                color: white;
+                position: absolute;
+                
+                border: 5px solid rgba(var(--color-fg));
+                border-radius: 20px;
+
+                top: 50%;
+                left: 50%;
+
+                transform: translate(-50%, -50%);
+                text-align: center;
+            }
+        </style>
+    </head>
+    <div class = "body">
+        <div>Currently queuing for a game...</div>
+        <div>Elapsed seconds: </div>
+        <div id = "timer">0</div>
+    </div>
+    <script>
+        function init(){
+            let startTime = new Date().getTime()
+            console.log(window.location.host)
+            setInterval(function(){
+                document.getElementById('timer').textContent = Math.floor((new Date().getTime() - startTime)/1000)
+            }, 1000)
+            let source = new EventSource("{{ url_for('sse.stream') }}");
+            source.addEventListener('matchFound', function(event) {
+                let data = JSON.parse(event.data);
+                let url = "/play?ID="+data["message"]
+                console.log("redirecting to "+url)
+                window.location.href = url
+                //redirect to the match
+            }, false);
+        }
+
+        window.onload = init;
+    </script>
+</html>

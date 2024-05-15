@@ -85,9 +85,9 @@
 </div>
 
 <script>
-    var source = new EventSource("{{ url_for('sse.stream') }}");
+    let source = new EventSource("{{ url_for('sse.stream') }}");
     source.addEventListener('greeting', function(event) {
-        var data = JSON.parse(event.data);
+        let data = JSON.parse(event.data);
         // do what you want with this data
         console.log(data)
     }, false);
