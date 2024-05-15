@@ -1,0 +1,94 @@
+/*set all elements to have zero padding, zero margin, and the box-sizing to "border-box"*/
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+/* defines colors for the theme */
+/* colors from red velvet's song: Russian Roulette */
+:root {
+    --color-bg:#ddf0ff; 
+    /* --color-self: #fff0b2; */
+    --color-self:#ffe680;
+    --color-opp:#ffbfd8;
+    --color-text:#fefefe;
+    --color-highlight:#A0DEFF;
+    --color-header:#5AB2FF;
+}
+
+body {
+    background-color: var(--color-bg);
+}
+
+.selfinfo{
+    position: fixed;
+    top: 10%;
+    left: 10%;
+}
+
+.oppinfo{
+    position: fixed;
+    top: 10%;
+    right: 10%;
+}
+
+.status{
+    position: fixed; 
+    left: 0; 
+    right: 0; 
+    margin-top: 2.5%;
+    margin-left: auto; 
+    margin-right: auto; 
+    width: 50%;
+    text-align: center;
+}
+
+h1{
+    color: var(--color-header);
+    font-size: 3.75vw;
+}
+
+#player_sprite{
+    position: fixed;
+    top: 25%;
+    left: 15%;
+}
+
+#opponent_sprite{
+    position: fixed;
+    top: 25%;
+    right: 15%;
+}
+
+#gun_sprite{
+    position: fixed; 
+    left: 0; 
+    right: 0; 
+    margin-top: 15%;
+    margin-left: auto; 
+    margin-right: auto; 
+}
+
+input[type=submit] {
+    position: fixed;
+    bottom: 5%;
+    height: 20%;
+    width: 30%;
+    padding: 10px;
+    text-align: center;
+    font-size: 3.25vw;
+    color:var(--color-text);
+}
+
+#attackSelf{
+    left: 2.5%;
+    background-color: var(--color-self);
+    border: 10px solid var(--color-highlight);
+}
+
+#attackOpp{
+    right: 2.5%;
+    background-color: var(--color-opp);
+    border: 10px solid var(--color-highlight);
+}
