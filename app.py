@@ -289,7 +289,7 @@ def play():
     #find the specific game currently being played
     #roulette object for logic
     
-    return "GAME"
+    return render_template("roulette.j2")
 
 #boolean controlling whether to queue or not
 print("initialized random stuff")
@@ -318,7 +318,7 @@ def queue():
         game = Roulette.Roulette(playerUsername, username(request.cookies))
         #the queued player becomes player 1, the newly joined player becomes player 2
         runningGames[gameID] = game
-
+        playerWaiting = False
         sse.publish({"message": gameID}, type='matchFound')
         #give player 1 a notification that a game was found
 
