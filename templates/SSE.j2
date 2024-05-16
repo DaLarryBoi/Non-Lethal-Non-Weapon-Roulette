@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="/static/profile.css">
+<style>
+    div.test{
+        
+    flex-direction: column;
+
+    background-color: rgba(var(--color-fg));
+    color: rgba(var(--color-text));
+    position: absolute;
+    
+    border: 5px solid rgba(var(--color-fg));
+    border-radius: 20px;
+
+    top: 50%;
+    left: 50%;
+
+    transform: translate(-50%, -50%);
+    text-align: center;
+    }
+</style>
+</head>
+
+<body>
+<div>
+    <h1 class = "big">{{username}}</h1>
+</div>
+<div class = "test">
+    FOOOOOOOOOOOOOOOOOOOBAR
+</div>
+<div>
+    <img src = "/static/avatars/cursed_donut.png" id="profilePicture" width="200" height="200">
+</div>
+
+<form id="avatarinfo">
+    <div class = "editonly">
+        <label for="img">Change Avatar:</label>
+        <input type="file" id="avatarImage" name="avatar" accept="image/*" disabled>
+        <input type="submit" value="Save Avatar" id = "saveavatar" name="edit" disabled>
+    </div>
+</form>
+<form id="userinfo"> 
+    <div>
+        <label>First Name:</label>
+        <input type="text" name = "fname" id = "fname" value = "" disabled>
+        <label>Last Name:</label>
+        <input type="text" name = "lname" id = "lname" value = "" disabled>
+    </div>
+    <div class = "editonly">
+        <div>
+            <label>Change Password:</label>
+            <input type="password" name="password" id = "password" value = "" disabled>
+            <label>Confirm New Password:</label>
+            <input type="password" name="cpassword" id = "cpassword" value = "" disabled>
+            <p class="error" id="errormessage"></p>
+        </div>
+        <div>
+            <input type="submit" value="Save" id = "save" name="edit" disabled>
+        </div>
+    </div>
+</form>
+
+<form id="deleteaccountform">
+    <div class = "editonly">
+        <input type = "submit" value="Delete Account" id = "delete" disabled>
+    </div>
+</form>
+
+<form id="logoutform" method="POST" action="/logout">
+    <div class = "editonly">
+        <input type = "submit" value="Log Out" id = "logout" disabled>
+    </div>
+</form>
+
+<div>
+    <h1>Games Played:</h1>
+</div>
+<div>
+    <h1>Score:</h1>
+</div>
+<div>
+    <h1>Opponent:</h1>
+</div>
+
+<script>
+    let source = new EventSource("{{ url_for('sse.stream') }}");
+    source.addEventListener('greeting', function(event) {
+        let data = JSON.parse(event.data);
+        // do what you want with this data
+        console.log(data)
+    }, false);
+</script>
+
+</body>
+</html>
+
+

@@ -6,6 +6,8 @@ import os
 import database
 import redis
 from werkzeug.utils import secure_filename
+from flask_sse import sse
+import Roulette
 
 #sudo service redis-server restart
 #start the redis server with this
@@ -14,7 +16,7 @@ database.init()
 r = redis.Redis(host='localhost', port=6379, decode_responses=True)
 #more databases for games and stuff
 
-
+runningGames = {}
 #folder to store profile pictures
 UPLOAD_FOLDER = os.path.join("static","avatars")
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
@@ -37,8 +39,37 @@ def game(gameid):
 
 
 #create Flask object
-app = Flask(__name__)
+app = Flask(__name__, template_folder = "templates")
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config["REDIS_URL"] = "redis://localhost"
+app.register_blueprint(sse, url_prefix='/stream')
+
+
+def loggedIn(cookies: dict) -> bool:
+    '''
+    cookies: the request cookies
+
+    Returns True if the user is logged in
+
+    Returns False if the user is not logged in
+    '''
+    if request.cookies.get('userID') == None:
+        #no userID
+        return False
+    if r.get(request.cookies.get('userID')) == None:
+        #invalid userID
+        return False
+    return True
+
+
+def username(cookies: dict) -> str:
+    '''
+    cookies: the request cookies
+
+    Returns the username of the user
+    Returns None if user is not logged in
+    '''
+    return r.get(request.cookies.get('userID'))
 
 #creates a route
 @app.route("/", methods=['GET'])
@@ -51,7 +82,7 @@ def index():
             return redirect(f"/{username}/profile",username) 
         return redirect(url_for("login"))
     except:
-        return redirect(url_for("login"))
+        return redirect(url_for("login")), 301
 
 @app.route("/login", methods=['GET','POST'])
 def login():
@@ -96,6 +127,7 @@ def logout():
     except:
         print("not logged in")
         return redirect(url_for("login")) 
+
 
 # display list of profiles when logged in
 @app.route("/profiles", methods=['GET']) 
@@ -273,16 +305,44 @@ def deleted():
 def play():
     #find the specific game currently being played
     #roulette object for logic
-    return redirect(url_for("login"))
+    
+    return "GAME"
 
+#boolean controlling whether to queue or not
+print("initialized random stuff")
+playerWaiting = False
+playerUsername = ""
 #searching for people to play against
 @app.route("/queue", methods=['GET','PUT','POST']) #user profile
 def queue():
+    global playerWaiting
+    global playerUsername
     #include queue timer
     #on client side(JavaScript), can have a async function...
     #...that waits for server to say if a game has been found, etc.
     #check for disconnect
-    return redirect(url_for("login"))
+    if not loggedIn(request.cookies):
+        #user not logged in, so we make them log in
+        return redirect(url_for("login"))
+    if not playerWaiting:
+        #no player currently in queue, add this player to the queue
+        playerUsername = username(request.cookies)
+        playerWaiting = True
+        return render_template("queue.j2")
+    else:
+        #we have a player in the queue, so we match them together
+        gameID = str(uuid.uuid4())
+        game = Roulette.Roulette(playerUsername, username(request.cookies))
+        #the queued player becomes player 1, the newly joined player becomes player 2
+        runningGames[gameID] = game
+
+        sse.publish({"message": gameID}, type='matchFound')
+        #give player 1 a notification that a game was found
+
+        parameters = "?ID="+gameID
+        return redirect(url_for("play")+parameters)
+
+
 
 #test game page
 @app.route("/testgame", methods=['GET'])
@@ -292,6 +352,19 @@ def testgame():
 @app.errorhandler(404)
 def notfound(e):
     return send_file("static/404.html")
+
+
+@app.route("/debug")
+def debug():
+    return render_template("queue.j2")
+
+
+@app.route('/send')
+def send_message():
+    sse.publish('{"message": "foobar!"}', type='matchFound')
+    return "Message sent!"
+
+
 
 #runs the server
 app.run(port=8080)
