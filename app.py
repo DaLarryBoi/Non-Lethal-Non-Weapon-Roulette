@@ -19,6 +19,23 @@ r = redis.Redis(host='localhost', port=6379, decode_responses=True)
 UPLOAD_FOLDER = os.path.join("static","avatars")
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
+#create a blueprint
+game_print = Blueprint('game_print', 'game.roulette')
+
+@game_print.route('/play/<gameid>', methods=['GET','PUT'])
+def game(gameid):
+    #check if logged in
+    #check if game with id exists
+    #check if player in game(use cookies to get username)
+    #check if game is still in progress
+    if request.method == 'GET':
+
+        return render_template("roulette.j2", player = self_username, opponent = opp_username)
+
+    
+    if request.method == 'PUT':
+
+
 #create Flask object
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER

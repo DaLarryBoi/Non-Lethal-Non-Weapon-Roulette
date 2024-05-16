@@ -53,14 +53,14 @@
         #gameover
         #liveShell
         #blankShell
-        #gameid
 
         
     }
             
     let logic = null;  
+    let gameid = null;
 
-    source.addEventListener(GameID(str), function(data){
+    source.addEventListener(GameID(gameid), function(data){
         // Code to run when the event
         {# Set every variable to stuff from server
             turn, gameover, numLive,numBlank #}
@@ -72,8 +72,8 @@
 
     async function init(){
         let params = new URLSearchParams(window.location.search)
-        let gameid = params.get("id")
-        logic = new RouletteGame(NUM_ROWS, NUM_COLS);
+        gameid = params.get("id")
+        logic = new RouletteGame();
 
     }
 
