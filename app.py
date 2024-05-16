@@ -21,30 +21,6 @@ runningGames = {}
 UPLOAD_FOLDER = os.path.join("static","avatars")
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
-#create a blueprint
-game_print = Blueprint('game_print', 'game.roulette')
-
-@game_print.route('/play/<gameid>', methods=['GET','PUT'])
-def game(gameid):
-    #check if logged in
-    #check if game with id exists
-    #check if player in game(use cookies to get username)
-    #check if game is still in progress
-    if request.method == 'GET':
-
-        return render_template("roulette.j2", player = self_username, opponent = opp_username)
-
-    
-    if request.method == 'PUT':
-
-
-#create Flask object
-app = Flask(__name__, template_folder = "templates")
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config["REDIS_URL"] = "redis://localhost"
-app.register_blueprint(sse, url_prefix='/stream')
-
-
 def loggedIn(cookies: dict) -> bool:
     '''
     cookies: the request cookies
@@ -70,6 +46,34 @@ def username(cookies: dict) -> str:
     Returns None if user is not logged in
     '''
     return r.get(request.cookies.get('userID'))
+
+#create a blueprint
+game_print = Blueprint('game_print', 'game.roulette')
+
+@game_print.route('/<gameid>', methods=['GET','PUT'])
+def game(gameid):
+    print("test")
+    #check if logged in
+    #check if game with id exists
+    #check if player in game(use cookies to get username)
+    #check if game is still in progress
+    if request.method == 'GET':
+        return
+        # return render_template("roulette.j2", player = self_username, opponent = opp_username)
+
+    #check if logged in
+    #check if game with id exists
+    #check if player in game
+    if request.method == 'PUT':
+        return
+
+
+#create Flask object
+app = Flask(__name__, template_folder = "templates")
+app.register_blueprint(game_print, url_prefix='/play')
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config["REDIS_URL"] = "redis://localhost"
+app.register_blueprint(sse, url_prefix='/stream')
 
 #creates a route
 @app.route("/", methods=['GET'])
