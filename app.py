@@ -14,9 +14,8 @@ import Roulette
 
 database.init()
 r = redis.Redis(host='localhost', port=6379, decode_responses=True)
-#more databases for games and stuff
-
 runningGames = {}
+
 #folder to store profile pictures
 UPLOAD_FOLDER = os.path.join("static","avatars")
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
@@ -47,30 +46,8 @@ def username(cookies: dict) -> str:
     '''
     return r.get(request.cookies.get('userID'))
 
-#create a blueprint
-game_print = Blueprint('game_print', 'game.roulette')
-
-@game_print.route('/<gameid>', methods=['GET','PUT'])
-def game(gameid):
-    print("test")
-    #check if logged in
-    #check if game with id exists
-    #check if player in game(use cookies to get username)
-    #check if game is still in progress
-    if request.method == 'GET':
-        return
-        # return render_template("roulette.j2", player = self_username, opponent = opp_username)
-
-    #check if logged in
-    #check if game with id exists
-    #check if player in game
-    if request.method == 'PUT':
-        return
-
-
 #create Flask object
 app = Flask(__name__, template_folder = "templates")
-app.register_blueprint(game_print, url_prefix='/play')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config["REDIS_URL"] = "redis://localhost"
 app.register_blueprint(sse, url_prefix='/stream')
@@ -302,15 +279,48 @@ def account(user):
 @app.route("/deleted", methods=['GET','DELETE']) 
 def deleted():
     print("deleted page")
-    return render_template("deleted.j2"), {"Refresh": "5; url=/login"}
+    return render_template("tempPage.j2", message = "Your Account Has Been Deleted!"), {"Refresh": "5; url=/login"}
 
 #playing the game
 @app.route("/play", methods=['GET','PUT','POST']) #user profile
 def play():
-    #find the specific game currently being played
-    #roulette object for logic
+    #check if logged in
+    if not loggedIn(request.cookies):
+        print("not logged in")
+        return redirect(url_for("login"))
     
-    return "GAME"
+    gameID = request.args.get("ID")
+    userName = username(request.cookies)
+
+    print('gameID:',gameID)
+    print('username:',userName)
+
+    #check if game exists + if in game
+    if not database.check_if_in_game(gameID, userName):
+        print("not in game/game doesn't exist")
+        return redirect("/"+userName+"/profile")
+
+    #returns details(string id, string player1, string player2, int status)
+    #format: ('ef5073fd-f8db-4b5c-bf7d-52769afdd7b4', '1', 'test2', 0)
+    gameDetails = database.game_details(gameID)
+    print("game details: ", gameDetails)
+
+    if request.method == 'GET':
+        #check if game is still in progress
+        if gameDetails[3] > 0:
+            return render_template("tempPage.j2", message = "This game has finished!"), {"Refresh": "5; url=/login"}
+
+        #figure out which player is the opponent
+        if gameDetails[1] == userName:
+            print("player2 is opponent")
+            return render_template("roulette.j2", player = userName, opponent = gameDetails[2])
+        else: 
+            print("player1 is opponent")
+            return render_template("roulette.j2", player = userName, opponent = gameDetails[1])
+
+    #depending on the action, do stuff
+    if request.method == 'PUT':
+        return
 
 #boolean controlling whether to queue or not
 print("initialized random stuff")
@@ -337,9 +347,15 @@ def queue():
         #we have a player in the queue, so we match them together
         gameID = str(uuid.uuid4())
         game = Roulette.Roulette(playerUsername, username(request.cookies))
+
+        #store details in database
+        database.create_game(gameID, playerUsername, username(request.cookies))
+        print('game stored---------------------')
+        database.display()
+
         #the queued player becomes player 1, the newly joined player becomes player 2
         runningGames[gameID] = game
-
+        playerWaiting = False
         sse.publish({"message": gameID}, type='matchFound')
         #give player 1 a notification that a game was found
 

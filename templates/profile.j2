@@ -5,6 +5,13 @@
 </head>
 
 <body>
+
+<form method="GET" action="/queue">
+    <div>
+        <input type = "submit" value="Queue" id = "queuebutton">
+    </div>
+</form>
+
 <div>
     <h1 class = "big">{{username}}</h1>
 </div>
@@ -31,7 +38,7 @@
             <label>Change Password:</label>
             <input type="password" name="password" id = "password" value = "" disabled>
             <label>Confirm New Password:</label>
-            <input type="passwor d" name="cpassword" id = "cpassword" value = "" disabled>
+            <input type="password" name="cpassword" id = "cpassword" value = "" disabled>
             <p class="error" id="errormessage"></p>
         </div>
         <div>
