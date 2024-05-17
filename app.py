@@ -289,6 +289,7 @@ def play():
         print("not logged in")
         return redirect(url_for("login"))
     
+    #get the game id and username
     gameID = request.args.get("ID")
     userName = username(request.cookies)
 
@@ -347,7 +348,8 @@ def play():
         if "data" not in request_data:
             return error("Data is missing")
         data = request_data["data"]
-
+        print('action:',action)
+        print('data:',data)
         #if action = attack
         if action == "attack":
             print('action = attack')
@@ -359,10 +361,12 @@ def play():
             #find player number of attacker
             if userName == players['p1']:
                 attacker = 1
+                print('attacker2',players['p1'])
             else:
                 attacker = 2
             #find the target
             target = data[0]
+            print('target', target)
             if target == players['p1']:
                 target = 1
             else:
@@ -370,7 +374,8 @@ def play():
 
             #check if its the attacker's turn
             turn = game.getTurn()%2
-            if turn != attacker:
+            print('turn:',turn)
+            if turn != attacker%2:
                 print('not attackers turn')
                 return error('not your turn!')
 
@@ -379,18 +384,26 @@ def play():
 
             #set all the variables
             status = result[1]
+            sendStatus = ""
             hp = game.getHP()
             shells = game.shellCount()
             blanks = shells[0]
             live = shells[1]
+
             if game.getTurn()%2 == 1:
                 turn = players["p1"]
             else:
                 turn = players["p2"]
 
+            if status == 1:
+                sendStatus = players["p1"] + "Wins!"
+            elif status == 2:
+                sendStatus = players["p2"] + "Wins!"
+
+
             message = {'blanks':blanks,
                        'live':live,
-                       'status':status, 
+                       'status':sendStatus, 
                        players['p1']:hp[0],
                        players['p2']:hp[1],
                        'turn':turn
@@ -455,7 +468,7 @@ def queue():
 #test game page
 @app.route("/testgame", methods=['GET'])
 def testgame():
-    return render_template("roulette.j2", player = "self", opponent = "opponent")
+    return render_template("roulette.j2", player = "self", opponent = "opponent", inithp = '3')
 
 @app.errorhandler(404)
 def notfound(e):

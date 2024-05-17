@@ -8,15 +8,17 @@
     <div class = "status">
         {# status of game #}
         <h1 id = "gamestatus"> Game Start! </h1>
+        <h1 id = "turnstatus"></h1>
     </div>
     <div class = "selfinfo">
         {# player username #}
         <h1>{{player}}</h1> 
+        <p id = 'selfHP'>{{inithp}}</p>
     </div>
     <div class = "oppinfo">
         {# opponent username #}
         <h1>{{opponent}}</h1>
-        <p>test</p>
+        <p id = 'oppHP'>{{inithp}}</p>
     </div>
 
     {# images #}
@@ -32,13 +34,13 @@
 
     <form id="attackSelfForm">
         <div>
-            <input type = "submit" value="Attack Self" id = "attackSelf" class = "attackSelf" disabled >
+            <input type = "submit" value="Attack Self" id = "attackSelf" class = "attackSelf"  >
         </div>
     </form>
 
     <form id="attackOppForm">
         <div >
-            <input type = "submit" value="Attack Opp" id = "attackOpp" class = "attackOpp" disabled>
+            <input type = "submit" value="Attack Opp" id = "attackOpp" class = "attackOpp" >
         </div>
     </form>
 
@@ -57,13 +59,12 @@
     }
     
     let logic = null;  
-    let gameid = new URLSearchParams(window.location.search);
-    console.log(gameid)
-    gameid = gameid.get("ID")
-    console.log("ID: ", gameid)  
+    let gameID = null;
+    let player = "{{player}}";
+    let opponent = "{{opponent}}";
 
     let source = new EventSource("{{ url_for('sse.stream') }}");
-    source.addEventListener(gameid, function(data){
+    source.addEventListener(gameID, function(data){
         // Code to run when the event
         //{# Set every variable to stuff from server
         //    turn, gameover, numLive,numBlank #}
@@ -72,18 +73,84 @@
         weapon.src = "/static/sprites/bubble_gun_shooting.png" 
         // is pushed from the server
     });
-    function attack(){
+
+    //adds a delay for ms milliseconds
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    {# function attack(){
         let weapon = document.getElementById('gun_sprite')
         weapon.src = "/static/sprites/bubble_gun_shooting.png" 
+        sleep(1000)
         weapon.src = "/static/sprites/bubble_gun.png" 
+    } #}
+
+    async function putData(data = {}) {
+        let url = window.location;
+        console.log("putting data");
+        console.log(data);
+
+        const response = await fetch(url, {
+        method: "PUT",
+        headers: {
+                'Content-Type' : 'application/json'
+            },
+        body: JSON.stringify(data)
+        });
+        return response.json();
     }
-    
+
+    const attackSelfForm = document.getElementById("attackSelfForm");
+    const attackOppForm = document.getElementById("attackOppForm");
+
+    // Take over form submission
+    attackSelfForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        console.log("attack self pressed");
+        data = {'action':'attack','data':[player,player]}
+        putData(data);
+    });
+
+    attackOppForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        console.log("attack opponent pressed");
+        data = {'action':'attack','data':[opponent,player]}
+        putData(data);
+    });
+
+    function update(data){
+        //get all variables
+        let status = data['status']
+        let blanks = data['blanks']
+        let live = data['live']
+        let selfhp = data[player]
+        let opponenthp = data[opponent]
+        let turn = data['turn']
+
+        //update page with variables
+        document.getElementById('turnstatus').textContent = turn + "'s turn"
+        document.getElementById('selfHP').textContent = "hp: "+selfhp
+        document.getElementById('oppHP').textContent = "hp: "+opponenthp
+        document.getElementById('gamestatus').textContent = status
+    }
 
     async function init(){
         let params = new URLSearchParams(window.location.search)
         gameID = params.get("ID")
+        console.log('gameID: ',gameID)
         logic = new RouletteGame();
         
+        let source = new EventSource("{{ url_for('sse.stream') }}");
+        //set up a server side event
+        //listen for the matchFound event from the server
+        //when match found, redirect client to the game ID
+        source.addEventListener(gameID, function(event) {
+            let data = JSON.parse(event.data);
+            console.log(data)
+            update(data)
+
+        }, false);
     }
 
     window.onload = init;

@@ -33,9 +33,13 @@
             let startTime = new Date().getTime()
             console.log(window.location.host)
             setInterval(function(){
+                //have the queue timer continuously increment
                 document.getElementById('timer').textContent = Math.floor((new Date().getTime() - startTime)/1000)
             }, 1000)
             let source = new EventSource("{{ url_for('sse.stream') }}");
+            //set up a server side event
+            //listen for the matchFound event from the server
+            //when match found, redirect client to the game ID
             source.addEventListener('matchFound', function(event) {
                 let data = JSON.parse(event.data);
                 let url = "/play?ID="+data["message"]
