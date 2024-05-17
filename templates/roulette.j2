@@ -72,12 +72,23 @@
         weapon.src = "/static/sprites/bubble_gun_shooting.png" 
         // is pushed from the server
     });
-    function attack(){
-        let weapon = document.getElementById('gun_sprite')
-        weapon.src = "/static/sprites/bubble_gun_shooting.png" 
-        weapon.src = "/static/sprites/bubble_gun.png" 
-    }
-    
+
+    let startTime = new Date().getTime()
+    console.log(window.location.host)
+    setInterval(function(){
+        document.getElementById('timer').textContent = Math.floor((new Date().getTime() - startTime)/1000)
+    }, 1000)
+    let source = new EventSource("{{ url_for('sse.stream') }}");
+    source.addEventListener('matchFound', function(event) {
+        let data = JSON.parse(event.data);
+        let url = "/play?ID="+data["message"]
+        console.log("redirecting to "+url)
+        window.location.href = url
+        //redirect to the match
+    }, false);
+
+
+
 
     async function init(){
         let params = new URLSearchParams(window.location.search)
