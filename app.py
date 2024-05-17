@@ -301,7 +301,7 @@ def play():
         return redirect("/"+userName+"/profile")
 
     #returns details(string id, string player1, string player2, int status)
-    #format: ('ef5073fd-f8db-4b5c-bf7d-52769afdd7b4', '1', 'test2', 0)
+    #format: ('gameID', 'player1', 'player2', 0)
     gameDetails = database.game_details(gameID)
     print("game details: ", gameDetails)
 
@@ -320,7 +320,95 @@ def play():
 
     #depending on the action, do stuff
     if request.method == 'PUT':
-        return
+        status = 'ok'
+        returnData = ''
+
+        def error(msg:str):
+            '''
+            returns an error given a string message
+            '''
+            return {"status":'error',"data":msg}
+        
+        #sets the game object
+        game = runningGames[gameID]
+
+        #check for json
+        try:
+            len(request.json)
+        except:
+            return error("No JSON provided")
+        request_data = request.get_json()
+        
+        #check for action
+        if "action" not in request_data:
+            return error("Action is missing")
+        action = request_data['action']
+        
+        if "data" not in request_data:
+            return error("Data is missing")
+        data = request_data["data"]
+
+        #if action = attack
+        if action == "attack":
+            print('action = attack')
+            print('attacker = ', userName)
+            
+            #keep track of players
+            players = {'p1' : gameDetails[1],'p2' : gameDetails[2]}
+
+            #find player number of attacker
+            if userName == players['p1']:
+                attacker = 1
+            else:
+                attacker = 2
+            #find the target
+            target = data[0]
+            if target == players['p1']:
+                target = 1
+            else:
+                target = 2
+
+            #check if its the attacker's turn
+            turn = game.getTurn()%2
+            if turn != attacker:
+                print('not attackers turn')
+                return error('not your turn!')
+
+            #play in the game
+            result = game.attack(attacker, target)
+
+            #set all the variables
+            status = result[1]
+            hp = game.getHP()
+            shells = game.shellCount()
+            blanks = shells[0]
+            live = shells[1]
+            if game.getTurn()%2 == 1:
+                turn = players["p1"]
+            else:
+                turn = players["p2"]
+
+            message = {'blanks':blanks,
+                       'live':live,
+                       'status':status, 
+                       players['p1']:hp[0],
+                       players['p2']:hp[1],
+                       'turn':turn
+                       }
+            print(message)
+
+            #send server side event
+            sse.publish(message, type= gameID)
+            print("message published")
+
+            #if game is over, update status in database
+            if result[1] < 0:
+                database.update_game(gameID,status)
+                print('status updated')
+
+            return {status,returnData}
+
+        return {status,returnData}
 
 #boolean controlling whether to queue or not
 print("initialized random stuff")
