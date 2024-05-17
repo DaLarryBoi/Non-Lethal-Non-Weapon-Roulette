@@ -44,7 +44,6 @@
 
 
 <script type="text/javascript">
-    let loggedIn = {{loggedin}};
 
     class RouletteGame {
         #playerNum
@@ -58,15 +57,20 @@
     }
     
     let logic = null;  
-    let gameid = null;
-    let myTurn = False; //True if users turn, false if not
-    
-    source.addEventListener(GameID(gameid), function(data){
-        // Code to run when the event
-        {# Set every variable to stuff from server
-            turn, gameover, numLive,numBlank #}
+    let gameid = new URLSearchParams(window.location.search);
+    console.log(gameid)
+    gameid = gameid.get("ID")
+    console.log("ID: ", gameid)  
 
-    // is pushed from the server
+    let source = new EventSource("{{ url_for('sse.stream') }}");
+    source.addEventListener(gameid, function(data){
+        // Code to run when the event
+        //{# Set every variable to stuff from server
+        //    turn, gameover, numLive,numBlank #}
+        //
+        let weapon = document.getElementById('gun_sprite')
+        weapon.src = "/static/sprites/bubble_gun_shooting.png" 
+        // is pushed from the server
     });
     function attack(){
         let weapon = document.getElementById('gun_sprite')
