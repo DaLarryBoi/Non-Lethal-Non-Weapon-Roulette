@@ -58,17 +58,32 @@ class Roulette:
             #shell was a hit:
             self.reset()
         return (fired, gameover)
+    
     def shellCount(self) -> tuple:
         '''
         return (blank, live) shells
         '''
         live = sum(self.__chamber)
         return (len(self.__chamber) - live, live)
+    
     def players(self) -> tuple:
         '''
         return username of (p1, p2)
         '''
         return self.__PLAYERS
+    
+    def getHP(self) -> tuple:
+        '''
+        return hp of (p1, p2)
+        '''
+        return self.__hp
+    
+    def getTurn(self) -> int:
+        '''
+        return who's turn it is
+        '''
+        return self.__turn
+    
     def debug(self):
         '''
         DELETE THIS ONCE COMPLETE

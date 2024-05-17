@@ -22,10 +22,13 @@ def init():
     connection.close()
     return
 
-#input: string username, string password
-#attempts to register a user
-#returns True if successfully registered, returns False if not
-def user_register(username, password):
+def user_register(username:str, password:str) -> bool:
+    '''
+    username - the username of the person trying to register
+    password - the password of the person trying to register
+    returns True if successfully registered, returns False if not
+    '''
+
     connection = sqlite3.connect("database.db")
     cursor = connection.cursor()
     salt = ''.join(random.choices(string.printable, k=10))
