@@ -56,10 +56,11 @@
 
         
     }
-            
+    
     let logic = null;  
     let gameid = null;
-
+    let myTurn = False; //True if users turn, false if not
+    
     source.addEventListener(GameID(gameid), function(data){
         // Code to run when the event
         {# Set every variable to stuff from server
@@ -67,14 +68,18 @@
 
     // is pushed from the server
     });
-
-
+    function attack(){
+        let weapon = document.getElementById('gun_sprite')
+        weapon.src = "/static/sprites/bubble_gun_shooting.png" 
+        weapon.src = "/static/sprites/bubble_gun.png" 
+    }
+    
 
     async function init(){
         let params = new URLSearchParams(window.location.search)
-        gameid = params.get("id")
+        gameID = params.get("ID")
         logic = new RouletteGame();
-
+        
     }
 
     window.onload = init;

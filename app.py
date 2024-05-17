@@ -310,7 +310,7 @@ def play():
     #find the specific game currently being played
     #roulette object for logic
     
-    return render_template("roulette.j2")
+    return render_template("roulette.j2", disabled = False)
 
 #boolean controlling whether to queue or not
 print("initialized random stuff")
