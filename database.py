@@ -61,7 +61,7 @@ def user_register(username:str, password:str) -> bool:
 #input: string username, string password
 #attempts to login a user
 #returns True if succesfully logged in, returns False if not
-def user_login(username, password):
+def user_login(username: str, password: str) -> bool:
     connection = sqlite3.connect("database.db")
     cursor = connection.cursor()
     #check if username exists
@@ -85,10 +85,11 @@ def user_login(username, password):
 
 #input string username
 #deletes account with username string username
-def delete_account(username):
+def delete_account(username: str):
     connection = sqlite3.connect("database.db")
     cursor = connection.cursor()
-
+    
+    #get rowid, delete from users table, then delete from profiles table
     rowid = cursor.execute("SELECT rowid FROM users where username = (?)", (username,)).fetchall()[0][0]
     cursor.execute("DELETE from users WHERE username = (?)", (username,))
     connection.commit()
@@ -101,7 +102,7 @@ def delete_account(username):
     return
 
 #returns list of users
-def get_users():
+def get_users() -> list:
     connection = sqlite3.connect("database.db")
     cursor = connection.cursor()
 
@@ -114,7 +115,7 @@ def get_users():
 #input: string username
 #given a username, returns a dict of profile details
 #returns dict details
-def get_profile(username):
+def get_profile(username: str) -> dict:
     connection = sqlite3.connect("database.db")
     cursor = connection.cursor()
     userid = str(cursor.execute("SELECT rowid FROM users where username = (?)", (username,)).fetchall()[0][0])
@@ -134,7 +135,7 @@ def get_profile(username):
 
 #input string username, string fname, string lname
 #given a username and new name, updates the profile
-def update_name(username,fname,lname):
+def update_name(username: str,fname: str,lname: str):
     connection = sqlite3.connect("database.db")
     cursor = connection.cursor()
 
@@ -150,10 +151,11 @@ def update_name(username,fname,lname):
 
 #input: string username, string password
 #given a username and new password, updates the profile
-def update_password(username,password):
+def update_password(username:str ,password:str ):
     connection = sqlite3.connect("database.db")
     cursor = connection.cursor()
 
+    #create the salt, combine with password, hash the password
     salt = ''.join(random.choices(string.printable, k=10))
     hash = hashlib.sha256()
     hash.update(password.encode()+salt.encode())
@@ -170,7 +172,7 @@ def update_password(username,password):
 
 #input: string username, string filename
 #given an image, updates the profile filepath
-def update_avatar(username, filename):
+def update_avatar(username:str , filename:str ):
     connection = sqlite3.connect("database.db")
     cursor = connection.cursor()
 
@@ -197,24 +199,25 @@ def display():
 #input string username
 #checks if a username is in the users database
 #returns true if in database, false if not
-def check_exists(username):
+def check_exists(username:str) -> bool:
     connection = sqlite3.connect("database.db")
     cursor = connection.cursor()
 
     data = (username,)
     alreadyexists = cursor.execute("SELECT username FROM users WHERE username = (?)", data).fetchall()
     if alreadyexists != []:
+        #array is not empty, so something exists
         cursor.close()
         connection.close()
         return True
-
+    #array was empty, so nothing existed
     cursor.close()
     connection.close()
     return False
 
 #input: string id, string player1, string player2
 #stores information in the games database and sets its status to 0(ongoing)
-def create_game(id,player1,player2):
+def create_game(id:str,player1:str,player2:str):
     connection = sqlite3.connect("database.db")
     cursor = connection.cursor()
 
@@ -229,7 +232,7 @@ def create_game(id,player1,player2):
 #Input: string id, string username
 #checks if username is in game with gameid id
 #returns True if yes, False if no or if no games have the id
-def check_if_in_game(id, username):
+def check_if_in_game(id:str, username:str) -> bool:
     connection = sqlite3.connect("database.db")
     cursor = connection.cursor()
 
@@ -249,7 +252,7 @@ def check_if_in_game(id, username):
     
 #input: string id, int status
 #updates status of game with string id with int status
-def update_game(id,status):
+def update_game(id:str,status:str):
     connection = sqlite3.connect("database.db")
     cursor = connection.cursor()
 
@@ -263,7 +266,7 @@ def update_game(id,status):
 #input: string id
 #returns details(string id, string player1, string player2, int status) of the game with the id of string id
 #returns error if multiple games with same id
-def game_details(id):
+def game_details(id:str) -> str:
     connection = sqlite3.connect("database.db")
     cursor = connection.cursor()
 
@@ -296,3 +299,4 @@ def game_details(id):
 # delete_account("bob")
 # display()
 # get_profile("test")
+#print(type(get_users()))
