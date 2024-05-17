@@ -314,10 +314,10 @@ def play():
         #figure out which player is the opponent
         if gameDetails[1] == userName:
             print("player2 is opponent")
-            return render_template("roulette.j2", player = userName, opponent = gameDetails[2])
+            return render_template("roulette.j2", player = userName, opponent = gameDetails[2], first = gameDetails[1]+"'s turn")
         else: 
             print("player1 is opponent")
-            return render_template("roulette.j2", player = userName, opponent = gameDetails[1])
+            return render_template("roulette.j2", player = userName, opponent = gameDetails[1], first = gameDetails[1]+"'s turn")
 
     #depending on the action, do stuff
     if request.method == 'PUT':
