@@ -270,7 +270,7 @@ def game_details(id):
     connection.close()
     
     if len(checker) == 1:
-        return checker
+        return checker[0]
     else:
         return "error"
 
